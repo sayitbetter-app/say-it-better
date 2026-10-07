@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Say It Better – Fix your awkward messages</title>
+<meta name="description" content="Paste an awkward message, pick a vibe, get 3 better versions instantly. Free.">
+<meta property="og:title" content="Say It Better – Fix your awkward messages">
+<meta property="og:description" content="Paste an awkward message, pick a vibe, get 3 better versions instantly.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+<style>
+  :root{--bg:#fff8f0;--card:#ffffff;--ink:#1d1b26;--muted:#6b6878;--brand:#ff5a36;--brand2:#ffd23f;--line:#ece4da;--soft:#fff1e8}
+  @media (prefers-color-scheme:dark){:root{--bg:#16151c;--card:#211f2a;--ink:#f4f1ec;--muted:#a7a3b3;--line:#34313f;--soft:#2b2733}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto;padding:28px 16px 60px}
+  h1{font-size:clamp(2rem,6vw,3rem);line-height:1.05;margin:8px 0 8px;letter-spacing:-.02em}
+  h1 span{background:linear-gradient(transparent 60%,var(--brand2) 60%);color:inherit}
+  .sub{color:var(--muted);margin:0 0 24px;font-size:1.05rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 6px 24px rgba(0,0,0,.05)}
+  label{font-weight:700;font-size:.9rem;display:block;margin:14px 0 8px}
+  label:first-child{margin-top:0}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:8px 13px;font-size:.92rem;cursor:pointer;font-family:inherit}
+  .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  textarea{width:100%;min-height:130px;border:1.5px solid var(--line);border-radius:12px;padding:12px;font:inherit;background:var(--bg);color:var(--ink);resize:vertical}
+  textarea:focus{outline:2px solid var(--brand);border-color:transparent}
+  .count{font-size:.8rem;color:var(--muted);text-align:right}
+  .go{width:100%;margin-top:14px;background:var(--brand);color:#fff;border:0;border-radius:14px;padding:15px;font-size:1.1rem;font-weight:800;cursor:pointer;font-family:inherit}
+  .go:disabled{opacity:.6;cursor:wait}
+  .err{color:#d93025;font-weight:600;margin-top:10px}
+  .results{margin-top:22px;display:grid;gap:12px}
+  .res{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;white-space:pre-wrap}
+  .res .tag{font-size:.75rem;font-weight:800;color:var(--brand);text-transform:uppercase;letter-spacing:.06em}
+  .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .sm{border:1.5px solid var(--line);background:var(--soft);color:var(--ink);border-radius:10px;padding:7px 12px;font-size:.85rem;cursor:pointer;font-family:inherit}
+  .share{margin-top:26px;text-align:center;color:var(--muted);font-size:.95rem}
+  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Say it <span>better.</span> 💬</h1>
+  <p class="sub">Paste the message you're nervous to send. Pick a vibe. Get 3 better versions in seconds. Free, no sign-up.</p>
+
+  <div class="card">
+    <label>1. What's the situation?</label>
+    <div class="chips" id="situations"></div>
+
+    <label for="msg">2. Your message (rough is fine)</label>
+    <textarea id="msg" maxlength="1500" placeholder="e.g. hey sorry to bother you again but you still haven't paid the invoice from last month and I really need it"></textarea>
+    <div class="count"><span id="cnt">0</span>/1500</div>
+
+    <label>3. Pick a vibe</label>
+    <div class="chips" id="tones"></div>
+
+    <button class="go" id="go">✨ Say it better</button>
+    <div class="err" id="err"></div>
+  </div>
+
+  <div class="results" id="results"></div>
+
+  <div class="share">Know someone who needs this? <button class="sm" id="shareBtn">🔗 Share Say It Better</button></div>
+  <footer>Your messages are not stored. Always read before you send. 🙂</footer>
+</div>
+
+<script>
+const SITUATIONS=[["raise","💰 Ask for a raise"],["money","🧾 Chase unpaid money"],["invite","🙅 Say no to an invite"],["angry","😤 Reply to an angry email"],["ex","💔 Text an ex"],["deadline","⏰ Ask for a deadline extension"],["other","✏️ Something else"]];
+const TONES=[["polite","😊 Polite"],["firm","💪 Firm"],["funny","😂 Funny"],["savage","🔥 Savage"],["diplomatic","🕊️ Diplomatic (UN-style)"],["plain","📝 Plain English"]];
+let situation="other", tone="polite";
+
+function chips(id,list,cur,set){
+  const box=document.getElementById(id);box.innerHTML="";
+  list.forEach(([k,t])=>{const b=document.createElement("button");b.className="chip"+(k===cur()?" on":"");b.textContent=t;
+    b.onclick=()=>{set(k);chips(id,list,cur,set)};box.appendChild(b)});
+}
+chips("situations",SITUATIONS,()=>situation,v=>situation=v);
+chips("tones",TONES,()=>tone,v=>tone=v);
+
+const msg=document.getElementById("msg"),cnt=document.getElementById("cnt");
+msg.oninput=()=>cnt.textContent=msg.value.length;
+
+document.getElementById("go").onclick=async()=>{
+  const btn=document.getElementById("go"),err=document.getElementById("err"),out=document.getElementById("results");
+  err.textContent="";
+  if(msg.value.trim().length<3){err.textContent="Type your message first 🙂";return}
+  btn.disabled=true;btn.textContent="✍️ Rewriting...";out.innerHTML="";
+  try{
+    const r=await fetch("/api/rewrite",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg.value,tone,situation})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||"Something went wrong.");
+    d.versions.forEach((v,i)=>{
+      const el=document.createElement("div");el.className="res";
+      el.innerHTML='<div class="tag">Version '+(i+1)+'</div>';
+      const p=document.createElement("div");p.textContent=v;el.appendChild(p);
+      const row=document.createElement("div");row.className="row";
+      const c=document.createElement("button");c.className="sm";c.textContent="📋 Copy";
+      c.onclick=()=>{navigator.clipboard.writeText(v);c.textContent="✅ Copied!";setTimeout(()=>c.textContent="📋 Copy",1500)};
+      row.appendChild(c);el.appendChild(row);out.appendChild(el);
+    });
+    out.scrollIntoView({behavior:"smooth"});
+  }catch(e){err.textContent=e.message}
+  btn.disabled=false;btn.textContent="✨ Say it better";
+};
+
+document.getElementById("shareBtn").onclick=async()=>{
+  const data={title:"Say It Better",text:"This fixes awkward messages in seconds 😂",url:location.origin};
+  if(navigator.share){try{await navigator.share(data)}catch(e){}}
+  else{navigator.clipboard.writeText(location.origin);document.getElementById("shareBtn").textContent="✅ Link copied!"}
+};
+</script>
+</body>
+</html>
