@@ -6,7 +6,7 @@ const TONES = {
   firm: "Firm: confident, direct, clear boundaries, no over-apologising, still professional.",
   funny: "Funny: light, witty, charming humour that still gets the point across.",
   savage: "Savage: bold, sharp and cheeky, but never hateful, abusive, or discriminatory.",
-  diplomatic: "Diplomatic (UN-style): measured, neutral, face-saving, formal, constructive.",
+  diplomatic: "Diplomatic: measured, neutral, face-saving, formal, constructive.",
   plain: "Plain English: short, simple, crystal-clear words anyone can understand."
 };
 
